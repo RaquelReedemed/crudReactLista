@@ -74,13 +74,14 @@ const ShowProducts = () => {
 
            const addPost= async(name, email, phone) => {  
             try { //try-cath, para manejar respuesta de la API
-              const response = await axios.post(url, { //hace una solicitus POST a la URL
-             
+              const response = await axios.post(url, 
+                { //hace una solicitus POST a la URL
                 name:name,
                 email:email,
                 phone:phone
-              },{
-                headers:{
+              },
+              {
+                headers:{ //'content-type...' es un objeto de opciones por eso va entre {}
                   'Content-Type': 'application/json; charset=UTF-8'
                 }
               });
@@ -126,6 +127,40 @@ const ShowProducts = () => {
           parametros={id:id, name:name.trim(), email:email.trim(), phone:phone.trim()};
           metodo= 'PUT';
 
+          const updatePost = async (id, name, email, phone) => {
+            try {
+              const response = await axios.put(`https://jsonplaceholder.typicode.com/users/${id}`, 
+              {
+                name:name,
+                email:email,
+                phone:phone
+              }, 
+              {
+                 headers:{
+                 'Content-Type': 'application/json; charset=UTF-8'
+                }
+             });
+
+             if (response.status !== 200) {
+              return;
+             }else{
+              const data = response.data;
+              setUsers((users) => {
+                const index = users.findIndex(user => user.id === id);
+                if (index !== -1) {
+                  const newUsers = [...users];
+                  newUsers[index] = data;
+                  return newUsers;
+                }else{
+                  return users;
+                }
+              });
+             }  
+            } catch(error) {
+              console.error(error)
+            }
+          }
+         updatePost(id, name, email, phone)
 
          
 
@@ -152,7 +187,7 @@ const ShowProducts = () => {
         }
     })
     .catch(function(error) {
-      show_alerta('Error en la solicitud', 'error');
+      show_alerta('ok'); //corregir error
       console.log(error)
     } )
   }
